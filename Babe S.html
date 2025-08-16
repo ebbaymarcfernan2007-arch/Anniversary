@@ -1,0 +1,338 @@
+ <!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Stephanie</title>
+  <style>
+    body, html {
+      margin: 0; padding: 0; height: 100%;
+      overflow: hidden;
+      font-family: 'Comic Sans MS', cursive, sans-serif;
+      background: radial-gradient(ellipse at center, #1a1a3d 0%, #0b0b1a 70%, #000000 100%);
+      color: #fff;
+      position: relative;
+    }
+
+    @keyframes fadeInPopup {
+      from {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0.8);
+      }
+      to {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+      }
+    }
+
+    @keyframes twinkle {
+      0% {opacity: 0.2;}
+      100% {opacity: 1;}
+    }
+
+    @keyframes shooting {
+      0% {
+        transform: translateX(0) translateY(0) rotate(45deg);
+        opacity: 1;
+      }
+      100% {
+        transform: translateX(-300px) translateY(300px) rotate(45deg);
+        opacity: 0;
+      }
+    }
+
+    @keyframes floatUp {
+      to {
+        transform: translate(-50px, -80px) rotate(45deg) scale(0.5);
+        opacity: 0;
+      }
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0; }
+    }
+
+    #stars {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: 0;
+    }
+
+    .star {
+      position: absolute;
+      width: 2px;
+      height: 2px;
+      background: white;
+      border-radius: 50%;
+      opacity: 0.8;
+      animation: twinkle 2s infinite alternate;
+    }
+
+    .shooting-star {
+      position: absolute;
+      width: 100px;
+      height: 2px;
+      background: linear-gradient(90deg, white, rgba(255,255,255,0));
+      opacity: 0.9;
+      border-radius: 100%;
+      transform: rotate(45deg);
+      animation: shooting 1.5s ease-in-out forwards;
+    }
+
+    #container {
+      position: relative;
+      z-index: 10;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+
+    #message {
+      font-size: 3rem;
+      color: #ff6f91;
+      text-shadow: 0 0 10px #ff6f91cc;
+      font-weight: bold;
+      user-select: none;
+      margin-bottom: 30px;
+      white-space: pre-wrap;
+      cursor: default;
+    }
+
+    #typedText {
+      display: inline;
+    }
+
+    #cursor {
+      display: inline-block;
+      color: #ff6f91;
+      animation: blink 0.7s infinite;
+      font-weight: bold;
+      font-size: 3rem;
+    }
+
+    #popup {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(0.8);
+      background: rgba(255, 255, 255, 0.1);
+      border: 2px solid #ff6f91;
+      border-radius: 15px;
+      padding: 20px 30px;
+      color: #fff;
+      max-width: 90%;
+      width: 400px;
+      text-align: center;
+      z-index: 20;
+      box-shadow: 0 0 20px #ff6f91aa;
+      display: none;
+      animation: fadeInPopup 0.5s ease forwards;
+    }
+
+    #popup p {
+      margin: 0;
+      font-size: 1.2rem;
+      line-height: 1.5;
+    }
+
+    #popup button {
+      margin-top: 15px;
+      background-color: #ff6f91;
+      border: none;
+      padding: 8px 15px;
+      color: white;
+      border-radius: 8px;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+
+    #showPopupBtn {
+      background-color: #ff6f91;
+      color: white;
+      border: none;
+      padding: 12px 25px;
+      border-radius: 12px;
+      font-size: 1.1rem;
+      cursor: pointer;
+      box-shadow: 0 0 10px #ff6f91aa;
+      transition: transform 0.2s ease;
+    }
+
+    #showPopupBtn:hover {
+      transform: scale(1.05);
+    }
+
+    .heart {
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      background-color: #ff6f91;
+      transform: rotate(45deg);
+      pointer-events: none;
+      opacity: 1;
+      animation: floatUp 1.5s forwards;
+      z-index: 999;
+    }
+
+    .heart::before,
+    .heart::after {
+      content: '';
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      background-color: #ff6f91;
+      border-radius: 50%;
+    }
+
+    .heart::before { top: -10px; left: 0; }
+    .heart::after { top: 0; left: -10px; }
+
+    #toggleMusicBtn {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background-color: #ff6f91;
+      color: white;
+      border: none;
+      padding: 10px 15px;
+      border-radius: 50px;
+      font-size: 1.2rem;
+      cursor: pointer;
+      box-shadow: 0 0 10px #ff6f91aa;
+      z-index: 100;
+      transition: transform 0.2s ease;
+    }
+
+    #toggleMusicBtn:hover {
+      transform: scale(1.1);
+    }
+  </style>
+</head>
+<body>
+
+  <div id="stars"></div>
+
+  <div id="container">
+    <div id="message">
+      <span id="typedText"></span><span id="cursor">|</span>
+    </div>
+    <button id="showPopupBtn">Open Message 💌</button>
+  </div>
+
+  <div id="popup">
+    <p>'Wag ka mag papaka stress sa college babe. I love you so much!<br><br>
+    I know you're busy so I won't take your time. <br><br>
+    I love you always and I know na mag kaka roon tayo ng enough time sa isa't isa. 💖</p>
+    <button onclick="closePopup()">Close</button>
+  </div>
+<audio id="bg-music" loop>
+  <source src="hikaru-nara.mp3" type="audio/mpeg" />
+  <source src="hikaru-nara.ogg" type="audio/ogg" />
+  Your browser does not support the audio element.
+</audio>
+
+   
+  <button id="toggleMusicBtn">🎵 Play Music</button>
+
+  <script>
+    // Alerts on page load
+    window.addEventListener("load", () => {
+      setTimeout(() => {
+        alert("Specially Created For u Stephanie 💫");
+        alert("I Can Only Do This Much\n\n- ino 🥺");
+      }, 500);
+    });
+
+    // Create stars
+    const starsContainer = document.getElementById('stars');
+    for (let i = 0; i < 100; i++) {
+      const star = document.createElement('div');
+      star.classList.add('star');
+      star.style.top = Math.random() * 100 + 'vh';
+      star.style.left = Math.random() * 100 + 'vw';
+      star.style.animationDuration = (1 + Math.random() * 3) + 's';
+      star.style.animationDelay = Math.random() * 5 + 's';
+      starsContainer.appendChild(star);
+    }
+
+    // Shooting stars animation
+    function shootingStar() {
+      const shooting = document.createElement('div');
+      shooting.classList.add('shooting-star');
+      shooting.style.top = Math.random() * 60 + 'vh';
+      shooting.style.left = Math.random() * 100 + 'vw';
+      starsContainer.appendChild(shooting);
+      shooting.addEventListener('animationend', () => {
+        shooting.remove();
+      });
+    }
+    setInterval(shootingStar, 2500);
+
+    // Typing effect
+    const typedText = document.getElementById('typedText');
+    const cursor = document.getElementById('cursor');
+    const message = "Hi Babe Stephanie,\nHappy Anniversary :)";
+    let index = 0;
+
+    function type() {
+      if (index < message.length) {
+        const char = message.charAt(index);
+        typedText.innerHTML += (char === "\n") ? "<br>" : char;
+        index++;
+        setTimeout(type, 100);
+      } else {
+        cursor.style.display = "none";
+      }
+    }
+    setTimeout(type, 1000);
+
+    // Popup controls
+    const popup = document.getElementById('popup');
+    const showPopupBtn = document.getElementById('showPopupBtn');
+    showPopupBtn.addEventListener('click', () => {
+      popup.style.display = 'block';
+    });
+    function closePopup() {
+      popup.style.display = 'none';
+    }
+
+    // Heart trail effect
+    document.addEventListener('mousemove', (e) => {
+      const heart = document.createElement('div');
+      heart.className = 'heart';
+      heart.style.left = `${e.clientX - 10}px`;
+      heart.style.top = `${e.clientY - 10}px`;
+      document.body.appendChild(heart);
+      heart.addEventListener('animationend', () => {
+        heart.remove();
+      });
+    });
+
+    // Music toggle button
+    const music = document.getElementById("bg-music");
+    const toggleBtn = document.getElementById("toggleMusicBtn");
+    let isPlaying = false;
+
+    toggleBtn.addEventListener("click", () => {
+      if (isPlaying) {
+        music.pause();
+        toggleBtn.textContent = "🎵 Play Music";
+      } else {
+        music.play();
+        toggleBtn.textContent = "⏸ Pause Music";
+      }
+      isPlaying = !isPlaying;
+    });
+  </script>
+
+</body>
+</html>
